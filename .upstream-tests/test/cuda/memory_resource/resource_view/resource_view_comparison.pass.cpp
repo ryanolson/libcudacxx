@@ -68,6 +68,7 @@ int main(int argc, char **argv) {
   cuda::resource_view<cuda::memory_access::device> v2 = &r2;
   cuda::resource_view<cuda::memory_access::host>   v3 = &r3;
   cuda::resource_view<cuda::memory_access::device, cuda::memory_access::host> v4 = &r4;
+  // compare views
   assert(v1 == v2);
   assert(v1 != v3);
   assert(v1 != v4);
@@ -75,6 +76,21 @@ int main(int argc, char **argv) {
   assert(v2 != v4);
   assert(v3 != v4);
   assert(v4 == v4);
+
+  // compare views vs resources
+  assert(v1 == &r1);
+  assert(v1 == &r2);
+  assert(v1 != &r4);
+  assert(v2 == &r2);
+  assert(v2 != &r4);
+  assert(v4 == &r4);
+
+  assert(&r1 == v1);
+  assert(&r2 == v1);
+  assert(&r4 != v1);
+  assert(&r2 == v2);
+  assert(&r4 != v2);
+  assert(&r4 == v4);
 #endif
   return 0;
 }

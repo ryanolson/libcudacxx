@@ -706,9 +706,9 @@ namespace detail {
     template <typename _Property>
     _CUDA_VSTD::false_type Has_Property(...);
     template <typename _Property, typename _MemoryKind, typename _Context>
-    kind_has_property<_MemoryKind, _Property> Has_Property(memory_resource<_MemoryKind, _Context> *);
+    kind_has_property<_MemoryKind, _Property> Has_Property(const memory_resource<_MemoryKind, _Context> *);
     template <typename _Property, typename _MemoryKind>
-    kind_has_property<_MemoryKind, _Property> Has_Property(stream_ordered_memory_resource<_MemoryKind> *);
+    kind_has_property<_MemoryKind, _Property> Has_Property(const stream_ordered_memory_resource<_MemoryKind> *);
 }  // namespace detail
 
 template <typename _Target, typename _Property>
@@ -868,6 +868,27 @@ template <typename _ResourcePointer>
 basic_resource_view<_ResourcePointer, is_kind<typename std::remove_pointer_t<_ResourcePointer>::memory_kind>>
 view_resource(_ResourcePointer __rsrc_ptr) {
     return __rsrc_ptr;
+}
+
+
+template <typename _ResourcePointer, typename... _Properties, typename _Kind, typename _Context>
+bool operator==(const basic_resource_view<_ResourcePointer, _Properties...> &__view, const memory_resource<_Kind, _Context> *__mr) {
+  return __view == view_resource(__mr);
+}
+
+template <typename _ResourcePointer, typename... _Properties, typename _Kind, typename _Context>
+bool operator!=(const basic_resource_view<_ResourcePointer, _Properties...> &__view, const memory_resource<_Kind, _Context> *__mr) {
+  return __view != view_resource(__mr);
+}
+
+template <typename _ResourcePointer, typename... _Properties, typename _Kind, typename _Context>
+bool operator==(const memory_resource<_Kind, _Context> *__mr, const basic_resource_view<_ResourcePointer, _Properties...> &__view) {
+  return view_resource(__mr) == __view;
+}
+
+template <typename _ResourcePointer, typename... _Properties, typename _Kind, typename _Context>
+bool operator!=(const memory_resource<_Kind, _Context> *__mr, const basic_resource_view<_ResourcePointer, _Properties...> &__view) {
+  return view_resource(__mr) != __view;
 }
 
 template <typename... _Properties>
