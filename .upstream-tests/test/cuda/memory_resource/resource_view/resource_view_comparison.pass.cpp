@@ -18,7 +18,7 @@
 
 
 template <typename tag>
-class resource : public cuda::memory_resource<cuda::memory_kind::pinned> {
+class resource : public cuda::stream_ordered_memory_resource<cuda::memory_kind::managed> {
 public:
   int value = 0;
 private:
@@ -26,11 +26,18 @@ private:
     return nullptr;
   }
 
+  void *do_allocate_async(size_t, size_t, cuda::stream_view) override {
+    return nullptr;
+  }
+
   void do_deallocate(void *, size_t, size_t) {
   }
 
+  void do_deallocate_async(void *, size_t, size_t, cuda::stream_view) override {
+  }
+
 #ifdef _LIBCUDACXX_EXT_RTTI_ENABLED
-  bool do_is_equal(const cuda::memory_resource<cuda::memory_kind::pinned> &other) const noexcept override {
+  bool do_is_equal(const cuda::memory_resource<cuda::memory_kind::managed> &other) const noexcept override {
     fprintf(stderr, "Comparison start: %p %p\n", this, &other);
     if (auto *other_ptr = dynamic_cast<const resource *>(&other)) {
       fprintf(stderr, "values: %d %d\n", value, other_ptr->value);
@@ -51,7 +58,7 @@ int main(int argc, char **argv) {
 #if !defined(__CUDA_ARCH__) && defined(_LIBCUDACXX_EXT_RTTI_ENABLED)
   resource<tag1> r1, r2, r3;
   resource<tag2> r4;
-  cuda::basic_resource_view<resource<tag1>*, cuda::is_kind<cuda::memory_kind::pinned>> v1_null;
+  cuda::basic_resource_view<resource<tag1>*, cuda::is_kind<cuda::memory_kind::managed>> v1_null;
   cuda::resource_view<cuda::memory_access::host> v2_null;
   assert(v1_null == v2_null);
   r1.value = 42;
@@ -65,8 +72,8 @@ int main(int argc, char **argv) {
   assert(view_resource(&r1) != view_resource(&r3));
   assert(view_resource(&r4) == view_resource(&r4));
   cuda::resource_view<cuda::memory_access::host, cuda::memory_access::device>   v1 = &r1;
-  cuda::resource_view<cuda::memory_access::device> v2 = &r2;
-  cuda::resource_view<cuda::memory_access::host>   v3 = &r3;
+  cuda::stream_ordered_resource_view<cuda::memory_access::device> v2 = &r2;
+  cuda::resource_view<cuda::memory_access::host> v3 = &r3;
   cuda::resource_view<cuda::memory_access::device, cuda::memory_access::host> v4 = &r4;
   // compare views
   assert(v1 == v2);
