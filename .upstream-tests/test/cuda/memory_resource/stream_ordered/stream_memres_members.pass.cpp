@@ -33,7 +33,6 @@ int main(int argc, char **argv) {
   static_assert(test_memory_kind<memory_kind::pinned>(), "");
 
   using mr = cuda::stream_ordered_memory_resource<memory_kind::host>;
-  static_assert(cuda::std::is_same<mr::context, cuda::any_context>::value, "");
 
   static_assert(test_alignment<memory_kind::host, alignof(cuda::std::max_align_t)>(), "");
   static_assert(test_alignment<memory_kind::device, alignof(cuda::std::max_align_t)>(), "");

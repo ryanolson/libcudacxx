@@ -25,8 +25,6 @@ constexpr bool test_alignment() {
   return mr::default_alignment == Alignment;
 }
 
-struct custom_context {};
-
 int main(int argc, char **argv) {
 
 #ifndef __CUDA_ARCH__
@@ -40,14 +38,6 @@ int main(int argc, char **argv) {
   static_assert(test_alignment<memory_kind::device, alignof(cuda::std::max_align_t)>(), "");
   static_assert(test_alignment<memory_kind::managed, alignof(cuda::std::max_align_t)>(), "");
   static_assert(test_alignment<memory_kind::pinned, alignof(cuda::std::max_align_t)>(), "");
-
-  using default_context_mr = cuda::memory_resource<memory_kind::host>;
-  static_assert( cuda::std::is_same<default_context_mr::context, cuda::any_context>::value, "");
-  static_assert(default_context_mr::default_alignment == alignof(cuda::std::max_align_t), "");
-
-  using custom_context_mr = cuda::memory_resource<cuda::memory_kind::host, custom_context>;
-  static_assert(cuda::std::is_same<custom_context_mr::context, custom_context>::value, "");
-
 #endif
 
   return 0;

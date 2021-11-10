@@ -19,7 +19,6 @@
 
 int main(int argc, char **argv) {
 #ifndef __CUDA_ARCH__
-  struct dummy_context;
   static_assert(cuda::detail::is_resource_pointer_convertible<derived2*, derived1*>::value,
                 "A pointer to a derived class should be convertible to a pointer of public a base class");
 
@@ -59,12 +58,6 @@ int main(int argc, char **argv) {
 
   static_assert(!cuda::detail::is_resource_pointer_convertible<cuda::detail::memory_resource_base*, cuda::memory_resource<cuda::memory_kind::managed>*>::value,
                 "A pointer to a commnon base class should not be convertible to a pointer to a kind-qualified resource.");
-
-  static_assert(!cuda::detail::is_resource_pointer_convertible<
-                        cuda::memory_resource<cuda::memory_kind::managed>*,
-                        cuda::memory_resource<cuda::memory_kind::managed, dummy_context>*>::value,
-                "Pointers to resources with differnt context type should be unrelated");
-
 #endif
   return 0;
 }
