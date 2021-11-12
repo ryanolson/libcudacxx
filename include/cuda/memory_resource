@@ -63,6 +63,17 @@ namespace memory_kind {
    * \brief Virtual memory that is automatically migrated between the host and devices.
    */
   struct managed;
+  
+  /*!
+   * \brief General kind for wrapping views
+   */
+  template <typename... Properties>
+  struct with_properties
+  {
+    template <typename Property>
+    struct contains : std::bool_constant<(std::is_same<Property, Properties>{} || ...)>{};
+  };
+  
 };
 
 namespace detail {
@@ -696,6 +707,10 @@ struct is_kind;
 
 template <typename _MemoryKind>
 struct kind_has_property<_MemoryKind, is_kind<_MemoryKind>> : _CUDA_VSTD::true_type {};
+
+template <typename P, typename... Properties>
+struct kind_has_property<memory_kind::with_properties<Properties...>, P>
+  : memory_kind::with_properties<Properties...>::template contains<P> {};
 
 #define _LIBCUDACXX_MEMORY_KIND_PROPERTY(__kind, __property)\
 template <> struct kind_has_property<__kind, __property> : _CUDA_VSTD::true_type {};
