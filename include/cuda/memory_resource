@@ -934,7 +934,7 @@ bool operator!=(const memory_resource<_Kind> *__mr, const basic_resource_view<_R
 }
 
 template <typename... _Properties>
-using resource_view = basic_resource_view<detail::memory_resource_base*, _Properties...>;
+using resource_view = basic_resource_view<detail::memory_resource_base*, any_memory, _Properties...>;
 
 template <typename... _Properties>
 using stream_ordered_resource_view = basic_resource_view<detail::stream_ordered_memory_resource_base*, _Properties...>;
