@@ -43,9 +43,6 @@ _LIBCUDACXX_BEGIN_NAMESPACE_CUDA
  *
  * This is not a closed set, the user code can define custom memory kinds.
  */
-
-struct any_memory {};
-
 namespace memory_kind {
   /*!
    * \brief Ordinary host memory
@@ -718,23 +715,19 @@ struct kind_has_property<memory_kind::with_properties<Properties...>, P>
 #define _LIBCUDACXX_MEMORY_KIND_PROPERTY(__kind, __property)\
 template <> struct kind_has_property<__kind, __property> : _CUDA_VSTD::true_type {};
 
-_LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::host, any_memory);
 _LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::host, memory_access::host);
 _LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::host, oversubscribable);
 _LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::host, memory_location::host);
 
-_LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::pinned, any_memory);
 _LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::pinned, memory_access::host);
 _LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::pinned, memory_access::device);
 _LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::pinned, resident);
 _LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::pinned, memory_location::host);
 
-_LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::device, any_memory);
 _LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::device, memory_access::device);
 _LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::device, resident);
 _LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::device, memory_location::device);
 
-_LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::managed, any_memory);
 _LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::managed, memory_access::host);
 _LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::managed, memory_access::device);
 _LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::managed, oversubscribable);
@@ -934,7 +927,7 @@ bool operator!=(const memory_resource<_Kind> *__mr, const basic_resource_view<_R
 }
 
 template <typename... _Properties>
-using resource_view = basic_resource_view<detail::memory_resource_base*, any_memory, _Properties...>;
+using resource_view = basic_resource_view<detail::memory_resource_base*, _Properties...>;
 
 template <typename... _Properties>
 using stream_ordered_resource_view = basic_resource_view<detail::stream_ordered_memory_resource_base*, _Properties...>;
