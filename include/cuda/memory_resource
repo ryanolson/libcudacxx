@@ -43,6 +43,9 @@ _LIBCUDACXX_BEGIN_NAMESPACE_CUDA
  *
  * This is not a closed set, the user code can define custom memory kinds.
  */
+
+struct any_memory {};
+
 namespace memory_kind {
   /*!
    * \brief Ordinary host memory
@@ -126,7 +129,7 @@ class basic_resource_view;
 template <typename... _Properties>
 struct properties;
 
-
+#if 0
 namespace detail {
   template <typename... _Properties>
   struct __kind_from_properties_helper {
@@ -159,7 +162,7 @@ struct kind_from_properties {
     detail::__kind_from_properties_helper_t<_Properties...>
   >;
 };
-
+#endif
 
 /*!
  * \brief Groups the tag types denoting the execution environment in which the memory can be accessed
@@ -715,19 +718,23 @@ struct kind_has_property<memory_kind::with_properties<Properties...>, P>
 #define _LIBCUDACXX_MEMORY_KIND_PROPERTY(__kind, __property)\
 template <> struct kind_has_property<__kind, __property> : _CUDA_VSTD::true_type {};
 
+_LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::host, any_memory);
 _LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::host, memory_access::host);
 _LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::host, oversubscribable);
 _LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::host, memory_location::host);
 
+_LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::pinned, any_memory);
 _LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::pinned, memory_access::host);
 _LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::pinned, memory_access::device);
 _LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::pinned, resident);
 _LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::pinned, memory_location::host);
 
+_LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::device, any_memory);
 _LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::device, memory_access::device);
 _LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::device, resident);
 _LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::device, memory_location::device);
 
+_LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::managed, any_memory);
 _LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::managed, memory_access::host);
 _LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::managed, memory_access::device);
 _LIBCUDACXX_MEMORY_KIND_PROPERTY(memory_kind::managed, oversubscribable);
