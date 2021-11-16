@@ -474,7 +474,7 @@ public:
    * \param __other The other resource to compare against
    */
   bool is_equal(memory_resource const& __other) const noexcept {
-    return do_is_equal(__other);
+    return memory_resource_base::is_equal(__other);
   }
 
 private:
@@ -818,9 +818,12 @@ struct is_view_convertible<
 template <typename _ResourcePointer, typename... _Properties>
 class basic_resource_view {
 public:
+    using pointer_type = _CUDA_VSTD::remove_reference_t<decltype(&*_CUDA_VSTD::declval<_ResourcePointer>())>;    
+    using resource_type = _CUDA_VSTD::remove_reference_t<decltype(*_CUDA_VSTD::declval<_ResourcePointer>())>;  
+
     static_assert(
-        _CUDA_VSTD::is_base_of<detail::memory_resource_base, typename ::std::pointer_traits<_ResourcePointer>::element_type>::value ||
-        _CUDA_VSTD::is_base_of<detail::stream_ordered_memory_resource_base, typename ::std::pointer_traits<_ResourcePointer>::element_type>::value,
+        _CUDA_VSTD::is_base_of<detail::memory_resource_base, typename ::std::pointer_traits<pointer_type>::element_type>::value ||
+        _CUDA_VSTD::is_base_of<detail::stream_ordered_memory_resource_base, typename ::std::pointer_traits<pointer_type>::element_type>::value,
         "ResourcePointer must be a pointer to a memory_resource_base, stream_ordered_memory_resource_base or a derived class");
 
     basic_resource_view() = default;
@@ -839,11 +842,11 @@ public:
      * \tparam _Resource Type of a mmeory resource object.
      * \param __p pointer to a memory resource object.
      */
-    template <typename _Resource, typename = _CUDA_VSTD::enable_if_t<
-        detail::is_resource_pointer_convertible<_Resource*, _ResourcePointer>::value &&
-        _CUDA_VSTD::conjunction<has_property<_Resource, _Properties>...>::value
+    template <typename __ResourcePointer__, typename = _CUDA_VSTD::enable_if_t<
+        detail::is_resource_pointer_convertible<_CUDA_VSTD::remove_reference_t<decltype(&*_CUDA_VSTD::declval<__ResourcePointer__>())>, pointer_type>::value &&
+        _CUDA_VSTD::conjunction<has_property<_CUDA_VSTD::remove_reference_t<decltype(*_CUDA_VSTD::declval<__ResourcePointer__>())>, _Properties>...>::value
     >>
-    basic_resource_view(_Resource *__p) : __pointer(__p) {}
+    basic_resource_view(__ResourcePointer__ __p) : __pointer(__p) {}
 
     /*!
      * \brief Constructs a resource view by copying the resource pointer from a compatible resource view.
@@ -889,7 +892,7 @@ private:
     template <typename, typename...>
     friend class basic_resource_view;
 
-    _ResourcePointer __pointer{};
+    _ResourcePointer __pointer{nullptr};
 };
 
 template <typename _FirstProperty, typename... _Properties, typename _ResourcePointer>
