@@ -474,7 +474,7 @@ public:
    * \param __other The other resource to compare against
    */
   bool is_equal(memory_resource const& __other) const noexcept {
-    return memory_resource_base::is_equal(__other);
+    return do_is_equal(__other);
   }
 
 private:
