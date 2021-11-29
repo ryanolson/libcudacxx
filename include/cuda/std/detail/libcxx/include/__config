@@ -860,6 +860,7 @@ typedef __char32_t char32_t;
   4127 \
   4180 \
   4197 \
+  4296 \
   4324 \
   4455 \
   4503 \
@@ -1635,8 +1636,6 @@ extern "C" _LIBCUDACXX_FUNC_VIS void __sanitizer_annotate_contiguous_container(
 #elif defined(_LIBCUDACXX_COMPILER_MSVC)
 #  define _LIBCUDACXX_HAS_MSVC_ATOMIC_IMPL
 #endif
-
-#define _LIBCUDACXX_NO_RUNTIME_LOCK_FREE
 
 // CUDA Atomics supersede host atomics in order to insert the host/device dispatch layer
 #if defined(_LIBCUDACXX_COMPILER_NVCC) || defined(_LIBCUDACXX_COMPILER_NVRTC) || defined(_LIBCUDACXX_COMPILER_PGI)
